@@ -10,7 +10,7 @@
       <define name="VIDEO_CAPTURE_PATH" value="/data/ftp/internal_000/images"/>
       <define name="LOGGER_FILE_PATH" value="/data/ftp/internal_000/log"/>
       <define name="MT9V117_TARGET_FPS" value="20"/>
-      
+
       <!-- Detect orange -->
       <define name="COLOR_OBJECT_DETECTOR_LUM_MIN1" value="30"/>
       <define name="COLOR_OBJECT_DETECTOR_LUM_MAX1" value="190"/>
@@ -25,12 +25,28 @@
       <define name="LOGGER_FILE_PATH" value="/tmp/paparazzi/log"/>
       
       <!-- Detect orange -->
-      <define name="COLOR_OBJECT_DETECTOR_LUM_MIN1" value="41"/>
-      <define name="COLOR_OBJECT_DETECTOR_LUM_MAX1" value="183"/>
-      <define name="COLOR_OBJECT_DETECTOR_CB_MIN1" value="53"/>
-      <define name="COLOR_OBJECT_DETECTOR_CB_MAX1" value="121"/>
-      <define name="COLOR_OBJECT_DETECTOR_CR_MIN1" value="134"/>
-      <define name="COLOR_OBJECT_DETECTOR_CR_MAX1" value="249"/>
+      <define name="COLOR_OBJECT_DETECTOR_LUM_MIN1" value="0"/>
+      <define name="COLOR_OBJECT_DETECTOR_LUM_MAX1" value="255"/>
+      <define name="COLOR_OBJECT_DETECTOR_CB_MIN1" value="0"/>
+      <define name="COLOR_OBJECT_DETECTOR_CB_MAX1" value="120"/>
+      <define name="COLOR_OBJECT_DETECTOR_CR_MIN1" value="0"/>
+      <define name="COLOR_OBJECT_DETECTOR_CR_MAX1" value="120"/>
+
+      <!-- Detect white -->
+      <define name="COLOR_OBJECT_DETECTOR_LUM_MIN1_WHITE" value="0"/>
+      <define name="COLOR_OBJECT_DETECTOR_LUM_MAX1_WHITE" value="255"/>
+      <define name="COLOR_OBJECT_DETECTOR_CB_MIN1_WHITE" value="0"/>
+      <define name="COLOR_OBJECT_DETECTOR_CB_MAX1_WHITE" value="120"/>
+      <define name="COLOR_OBJECT_DETECTOR_CR_MIN1_WHITE" value="0"/>
+      <define name="COLOR_OBJECT_DETECTOR_CR_MAX1_WHITE" value="255"/>
+
+      <!-- Detect green -->
+      <define name="COLOR_OBJECT_DETECTOR_LUM_MIN1_GREEN" value="50"/>
+      <define name="COLOR_OBJECT_DETECTOR_LUM_MAX1_GREEN" value="100"/>
+      <define name="COLOR_OBJECT_DETECTOR_CB_MIN1_GREEN" value="10"/>
+      <define name="COLOR_OBJECT_DETECTOR_CB_MAX1_GREEN" value="50"/>
+      <define name="COLOR_OBJECT_DETECTOR_CR_MIN1_GREEN" value="50"/>
+      <define name="COLOR_OBJECT_DETECTOR_CR_MAX1_GREEN" value="70"/>
     </target>
     
     <define name="ARRIVED_AT_WAYPOINT" value="0.5"/><!-- Detect arrival at waypoint when within 0.5m -->

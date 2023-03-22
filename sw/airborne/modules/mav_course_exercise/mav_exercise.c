@@ -33,12 +33,14 @@
 uint8_t increase_nav_heading(float incrementDegrees);
 uint8_t moveWaypointForward(uint8_t waypoint, float distanceMeters);
 uint8_t moveWaypoint(uint8_t waypoint, struct EnuCoor_i *new_coor);
+uint8_t updateObstacleFreeConfidence(void);
 
 enum navigation_state_t {
   SAFE,
   OBSTACLE_FOUND,
   OUT_OF_BOUNDS,
-  HOLD
+  HOLD,
+  CIRCLE
 };
 
 // define and initialise global variables
@@ -46,6 +48,7 @@ float oa_color_count_frac = 0.18f;
 enum navigation_state_t navigation_state = SAFE;
 int32_t color_count = 0;               // orange color count from color filter for obstacle detection
 int16_t obstacle_free_confidence = 0;   // a measure of how certain we are that the way ahead is safe.
+int32_t color_count_threshold = 0;      // threshold for orange color count
 float moveDistance = 2;                 // waypoint displacement [m]
 float oob_haeding_increment = 5.f;      // heading angle increment if out of bounds [deg]
 const int16_t max_trajectory_confidence = 5; // number of consecutive negative object detections to be sure we are obstacle free
@@ -55,6 +58,12 @@ const int16_t max_trajectory_confidence = 5; // number of consecutive negative o
 #ifndef ORANGE_AVOIDER_VISUAL_DETECTION_ID
 #define ORANGE_AVOIDER_VISUAL_DETECTION_ID ABI_BROADCAST
 #endif
+
+#ifndef MAV_COURSE_EXERCISE_HOR_SPEED
+#define MAV_COURSE_EXERCISE_HOR_SPEED 0.5
+#endif
+float hor_speed = MAV_COURSE_EXERCISE_HOR_SPEED; // horizontal speed [m/s], can be changed in settings
+
 static abi_event color_detection_ev;
 static void color_detection_cb(uint8_t __attribute__((unused)) sender_id,
                                int16_t __attribute__((unused)) pixel_x, int16_t __attribute__((unused)) pixel_y,
@@ -77,16 +86,12 @@ void mav_exercise_periodic(void) {
 
   // compute current color thresholds
   // front_camera defined in airframe xml, with the video_capture module
-  int32_t color_count_threshold = oa_color_count_frac * front_camera.output_size.w * front_camera.output_size.h;
+  color_count_threshold = oa_color_count_frac * front_camera.output_size.w * front_camera.output_size.h;
 
   PRINT("Color_count: %d  threshold: %d state: %d \n", color_count, color_count_threshold, navigation_state);
 
   // update our safe confidence using color threshold
-  if (color_count < color_count_threshold) {
-    obstacle_free_confidence++;
-  } else {
-    obstacle_free_confidence -= 2;  // be more cautious with positive obstacle detections
-  }
+  updateObstacleFreeConfidence();
 
   // bound obstacle_free_confidence
   Bound(obstacle_free_confidence, 0, max_trajectory_confidence);
@@ -108,7 +113,13 @@ void mav_exercise_periodic(void) {
       waypoint_move_here_2d(WP_GOAL);
       waypoint_move_here_2d(WP_TRAJECTORY);
 
-      navigation_state = HOLD;
+      while (obstacle_free_confidence < 2){
+        increase_nav_heading(20.0);
+        updateObstacleFreeConfidence();
+      }
+
+      navigation_state = SAFE;
+
       break;
     case OUT_OF_BOUNDS:
       // stop
@@ -126,6 +137,9 @@ void mav_exercise_periodic(void) {
       break;
     case HOLD:
     default:
+      break;
+    case CIRCLE:
+      
       break;
   }
 }
@@ -172,5 +186,19 @@ uint8_t moveWaypointForward(uint8_t waypoint, float distanceMeters) {
   struct EnuCoor_i new_coor;
   calculateForwards(&new_coor, distanceMeters);
   moveWaypoint(waypoint, &new_coor);
+  return false;
+}
+
+/*
+* Update obstacle confidence
+*/
+uint8_t updateObstacleFreeConfidence(void)
+{
+  // update our safe confidence using color threshold
+  if (color_count < color_count_threshold) {
+    obstacle_free_confidence++;
+  } else {
+    obstacle_free_confidence -= 2;  // be more cautious with positive obstacle detections
+  }
   return false;
 }

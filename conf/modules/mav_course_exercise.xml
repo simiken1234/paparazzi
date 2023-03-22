@@ -3,9 +3,25 @@
 <module name="mav_course_exercise">
   <doc>
     <description>
-    Exercise module for Autonomous Flight of MAV Course
+    Exercise module for Autonomous Flight of MAV Course. Now modified by Simon.
     </description>
   </doc>
-  <depends>cv_detect_color_object</depends>
+  <settings>
+    <dl_settings>
+      <dl_settings name="MavCourse">
+        <dl_setting var="hor_speed" min="0" step="0.1" max="3" shortname="Speed"/>
+      </dl_settings>
+    </dl_settings>
+  <dep>
+    <depends>cv_detect_color_object</depends>
+  </dep>
   <!-- TODO Specify header, init, periodic, makefile sections  -->
+  <header>
+    <file name="mav_exercise.h"/>
+  </header>
+  <init fun="mav_exercise_init()"/>
+  <periodic fun="mav_exercise_periodic()" freq="4"/>
+  <makefile target="ap|nps">
+    <file name="mav_exercise.c"/>
+  </makefile>
 </module>

@@ -46,6 +46,25 @@ extern uint8_t cod_cb_max2;
 extern uint8_t cod_cr_min2;
 extern uint8_t cod_cr_max2;
 
+// white
+
+extern uint8_t cod_lum_min1_white;
+extern uint8_t cod_lum_max1_white;
+extern uint8_t cod_cb_min1_white;
+extern uint8_t cod_cb_max1_white;
+extern uint8_t cod_cr_min1_white;
+extern uint8_t cod_cr_max1_white;
+
+// green
+
+extern uint8_t cod_lum_min1_green;
+extern uint8_t cod_lum_max1_green;
+extern uint8_t cod_cb_min1_green;
+extern uint8_t cod_cb_max1_green;
+extern uint8_t cod_cr_min1_green;
+extern uint8_t cod_cr_max1_green;
+
+
 extern bool cod_draw1;
 extern bool cod_draw2;
 

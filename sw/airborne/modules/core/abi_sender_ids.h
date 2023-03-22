@@ -612,4 +612,12 @@
 #define VEL_SP_FCR_ID 1 // Approach Moving Target
 #endif
 
+/*
+ * IDs of DEPTH senders
+ */
+
+#ifndef DEPTH_ID
+#define DEPTH_ID 1
+#endif
+
 #endif /* ABI_SENDER_IDS_H */

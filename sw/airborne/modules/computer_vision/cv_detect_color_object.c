@@ -60,6 +60,20 @@ uint8_t cod_cb_max1 = 0;
 uint8_t cod_cr_min1 = 0;
 uint8_t cod_cr_max1 = 0;
 
+uint8_t cod_lum_min1_white = 0;
+uint8_t cod_lum_max1_white = 0;
+uint8_t cod_cb_min1_white = 0;
+uint8_t cod_cb_max1_white = 0;
+uint8_t cod_cr_min1_white = 0;
+uint8_t cod_cr_max1_white = 0;
+
+uint8_t cod_lum_min1_green = 0;
+uint8_t cod_lum_max1_green = 0;
+uint8_t cod_cb_min1_green = 0;
+uint8_t cod_cb_max1_green = 0;
+uint8_t cod_cr_min1_green = 0;
+uint8_t cod_cr_max1_green = 0;
+
 uint8_t cod_lum_min2 = 0;
 uint8_t cod_lum_max2 = 0;
 uint8_t cod_cb_min2 = 0;
@@ -77,7 +91,7 @@ struct color_object_t {
   uint32_t color_count;
   bool updated;
 };
-struct color_object_t global_filters[2];
+struct color_object_t global_filters[4];
 
 // Function
 uint32_t find_object_centroid(struct image_t *img, int32_t* p_xc, int32_t* p_yc, bool draw,
@@ -96,10 +110,17 @@ static struct image_t *object_detector(struct image_t *img, uint8_t filter)
   uint8_t lum_min, lum_max;
   uint8_t cb_min, cb_max;
   uint8_t cr_min, cr_max;
+  uint8_t lum_min_w, lum_max_w;
+  uint8_t cb_min_w, cb_max_w;
+  uint8_t cr_min_w, cr_max_w;
+  uint8_t lum_min_g, lum_max_g;
+  uint8_t cb_min_g, cb_max_g;
+  uint8_t cr_min_g, cr_max_g;
   bool draw;
 
   switch (filter){
     case 1:
+      // Orange
       lum_min = cod_lum_min1;
       lum_max = cod_lum_max1;
       cb_min = cod_cb_min1;
@@ -107,6 +128,20 @@ static struct image_t *object_detector(struct image_t *img, uint8_t filter)
       cr_min = cod_cr_min1;
       cr_max = cod_cr_max1;
       draw = cod_draw1;
+      // White
+      lum_min_w = cod_lum_min1_white;
+      lum_max_w = cod_lum_max1_white;
+      cb_min_w = cod_cb_min1_white;
+      cb_max_w = cod_cb_max1_white;
+      cr_min_w = cod_cr_min1_white;
+      cr_max_w = cod_cr_max1_white;
+      // Green
+      lum_min_g = cod_lum_min1_green;
+      lum_max_g = cod_lum_max1_green;
+      cb_min_g = cod_cb_min1_green;
+      cb_max_g = cod_cb_max1_green;
+      cr_min_g = cod_cr_min1_green;
+      cr_max_g = cod_cr_max1_green;
       break;
     case 2:
       lum_min = cod_lum_min2;
@@ -116,24 +151,54 @@ static struct image_t *object_detector(struct image_t *img, uint8_t filter)
       cr_min = cod_cr_min2;
       cr_max = cod_cr_max2;
       draw = cod_draw2;
+      // White
+      lum_min_w = cod_lum_min1_white;
+      lum_max_w = cod_lum_max1_white;
+      cb_min_w = cod_cb_min1_white;
+      cb_max_w = cod_cb_max1_white;
+      cr_min_w = cod_cr_min1_white;
+      cr_max_w = cod_cr_max1_white;
+      // Green
+      lum_min_g = cod_lum_min1_green;
+      lum_max_g = cod_lum_max1_green;
+      cb_min_g = cod_cb_min1_green;
+      cb_max_g = cod_cb_max1_green;
+      cr_min_g = cod_cr_min1_green;
+      cr_max_g = cod_cr_max1_green;
       break;
     default:
       return img;
   };
 
   int32_t x_c, y_c;
+  int32_t x_c_white, y_c_white;
+  int32_t x_c_green, y_c_green;
 
   // Filter and find centroid
+  uint32_t count_green = find_object_centroid(img, &x_c_green, &y_c_green, draw, lum_min_g, lum_max_g, cb_min_g, cb_max_g, cr_min_g, cr_max_g);
   uint32_t count = find_object_centroid(img, &x_c, &y_c, draw, lum_min, lum_max, cb_min, cb_max, cr_min, cr_max);
-  VERBOSE_PRINT("Color count %d: %u, threshold %u, x_c %d, y_c %d\n", camera, object_count, count_threshold, x_c, y_c);
-  VERBOSE_PRINT("centroid %d: (%d, %d) r: %4.2f a: %4.2f\n", camera, x_c, y_c,
+  uint32_t count_white = find_object_centroid(img, &x_c_white, &y_c_white, draw, lum_min_w, lum_max_w, cb_min_w, cb_max_w, cr_min_w, cr_max_w);
+  VERBOSE_PRINT("Orange count %d: %u, threshold %u, x_c %d, y_c %d\n", camera, object_count, count_threshold, x_c, y_c);
+  VERBOSE_PRINT("White count %d: %u, threshold %u, x_c %d, y_c %d\n", camera, object_count_white, count_threshold_white, x_c_white, y_c_white);
+  VERBOSE_PRINT("Green count %d: %u, threshold %u, x_c %d, y_c %d\n", camera, object_count_green, count_threshold_green, x_c_green, y_c_green);
+  VERBOSE_PRINT("Orange centroid %d: (%d, %d) r: %4.2f a: %4.2f\n", camera, x_c, y_c,
         hypotf(x_c, y_c) / hypotf(img->w * 0.5, img->h * 0.5), RadOfDeg(atan2f(y_c, x_c)));
 
   pthread_mutex_lock(&mutex);
-  global_filters[filter-1].color_count = count;
+  global_filters[filter-1].color_count = count + count_white + count_green;
   global_filters[filter-1].x_c = x_c;
   global_filters[filter-1].y_c = y_c;
   global_filters[filter-1].updated = true;
+
+  global_filters[2].color_count = count_white;
+  global_filters[2].x_c = x_c_white;
+  global_filters[2].y_c = y_c_white;
+  global_filters[2].updated = true;
+
+  global_filters[3].color_count = count_green;
+  global_filters[3].x_c = x_c_green;
+  global_filters[3].y_c = y_c_green;
+  global_filters[3].updated = true;
   pthread_mutex_unlock(&mutex);
 
   return img;
@@ -157,12 +222,28 @@ void color_object_detector_init(void)
   pthread_mutex_init(&mutex, NULL);
 #ifdef COLOR_OBJECT_DETECTOR_CAMERA1
 #ifdef COLOR_OBJECT_DETECTOR_LUM_MIN1
+  // Orange
   cod_lum_min1 = COLOR_OBJECT_DETECTOR_LUM_MIN1;
   cod_lum_max1 = COLOR_OBJECT_DETECTOR_LUM_MAX1;
   cod_cb_min1 = COLOR_OBJECT_DETECTOR_CB_MIN1;
   cod_cb_max1 = COLOR_OBJECT_DETECTOR_CB_MAX1;
   cod_cr_min1 = COLOR_OBJECT_DETECTOR_CR_MIN1;
   cod_cr_max1 = COLOR_OBJECT_DETECTOR_CR_MAX1;
+  // White
+  cod_lum_min1_white = COLOR_OBJECT_DETECTOR_LUM_MIN1_WHITE;
+  cod_lum_max1_white = COLOR_OBJECT_DETECTOR_LUM_MAX1_WHITE;
+  cod_cb_min1_white = COLOR_OBJECT_DETECTOR_CB_MIN1_WHITE;
+  cod_cb_max1_white = COLOR_OBJECT_DETECTOR_CB_MAX1_WHITE;
+  cod_cr_min1_white = COLOR_OBJECT_DETECTOR_CR_MIN1_WHITE;
+  cod_cr_max1_white = COLOR_OBJECT_DETECTOR_CR_MAX1_WHITE;
+  // Green
+  cod_lum_min1_green = COLOR_OBJECT_DETECTOR_LUM_MIN1_GREEN;
+  cod_lum_max1_green = COLOR_OBJECT_DETECTOR_LUM_MAX1_GREEN;
+  cod_cb_min1_green = COLOR_OBJECT_DETECTOR_CB_MIN1_GREEN;
+  cod_cb_max1_green = COLOR_OBJECT_DETECTOR_CB_MAX1_GREEN;
+  cod_cr_min1_green = COLOR_OBJECT_DETECTOR_CR_MIN1_GREEN;
+  cod_cr_max1_green = COLOR_OBJECT_DETECTOR_CR_MAX1_GREEN;
+
 #endif
 #ifdef COLOR_OBJECT_DETECTOR_DRAW1
   cod_draw1 = COLOR_OBJECT_DETECTOR_DRAW1;
