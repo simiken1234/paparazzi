@@ -4,18 +4,31 @@
             "name": "Linux",
             "browse": {
                 "path": [
-                    "${workspaceFolder}"
+                    "/home/simiken1234/paparazzi"
                 ],
                 "limitSymbolsToIncludedHeaders": true
             },
             "includePath": [
-                "${workspaceFolder}"
+                "${workspaceFolder}/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/arm-none-eabi-gcc",
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64"
+            "intelliSenseMode": "clang-x64",
+            "compilerPathInCppPropertiesJson": "/usr/bin/arm-none-eabi-gcc",
+            "mergeConfigurations": false
+        },
+        {
+            "name": "Paparazzi",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
         }
     ],
     "version": 4

@@ -1,0 +1,27 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+<module name="guidance_soaring" dir="guidance">
+  <doc>
+    <description>
+    Soaring controller for fixed-wing aircraft based on thesis by Tom Suys using the TGL line.
+    </description>
+  </doc>
+  <settings>
+    <dl_settings>
+      <dl_settings NAME="SoaringGuidanceSettings">
+        <dl_setting var="heading_plane_setpoint" min="-20" step="0.1" max="20" shortname="heading [m]" />
+        <dl_setting var="TGL_p1_x" min="-20" step="0.1" max="20" shortname="TGL p1 x [m]" />
+        <dl_setting var="TGL_p1_z" min="-20" step="0.1" max="20" shortname="TGL p1 z [m]" />
+        <dl_setting var="TGL_p2_x" min="-20" step="0.1" max="20" shortname="TGL p2 x [m]" />
+        <dl_setting var="TGL_p2_z" min="-20" step="0.1" max="20" shortname="TGL p2 z [m]" />
+      </dl_settings>
+    </dl_settings>
+  </settings>
+  <header>
+    <file name="guidance_soaring.h"/>
+  </header>
+  <init fun="guidance_soaring_init()"/>
+  <periodic fun="guidance_soaring_loop()" freq="100" autorun="TRUE"/>
+  <makefile>
+    <file name="guidance_soaring.c" dir="${SRC_FIRMWARE}/guidance"/>
+  </makefile>
+</module>

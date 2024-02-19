@@ -1,0 +1,16 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+
+<module name="control_soaring" dir="control" task="control">
+  <doc>
+    <description>
+      Full PID control for fixed-wing aircraft.
+      Based on:
+      - stabilization_adaptive_fw
+      - guidance_soaring
+    </description>
+  </doc>
+  <dep>
+    <depends>stabilization_attitude_fw,guidance_soaring</depends>
+  </dep>
+  <makefile target="ap|sim|nps" firmware="fixedwing"/>
+</module>
