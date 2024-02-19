@@ -59,6 +59,7 @@ float TGL_p1_x;
 float TGL_p1_z;
 float TGL_p2_x;
 float TGL_p2_z;
+// For setpoints, X is actually Y
 
 //? Helper functions
 
@@ -140,8 +141,8 @@ void guidance_soaring_init(void) {
 
     // Init PI controller for pitch
     pidControllerReset(&pitch_controller);
-    pitch_controller.Kp = 0.01;
-    pitch_controller.Ki = 0.001;
+    pitch_controller.Kp = -0.01;
+    pitch_controller.Ki = -0.001;
     pitch_controller.t_step = 0.01;
     pitch_controller.output_max = 30 / 180 * M_PI;  // [rad]
     pitch_controller.output_min = -pitch_controller.output_max;
@@ -160,7 +161,7 @@ void guidance_soaring_loop(void) {
     current_pos = stateGetPositionEnu_f();
 
     // Yaw control
-    rudder_output = pidControllerUpdate(&yaw_controller, y_setpoint, current_pos->y);
+    rudder_output = pidControllerUpdate(&yaw_controller, y_setpoint, current_pos->x);  // Changed current_pos->y to x to account for coord sys
     h_ctl_rudder_setpoint = rudder_output;
 
     // Roll control
@@ -170,7 +171,7 @@ void guidance_soaring_loop(void) {
 
     // TGL plane defined by a line and extruded along the y-axis
     // Pitch down when behind the plane, pitch up when in front of the plane
-    tgl_error = calcTGLDistance(current_pos->x, current_pos->z, tgl_plane);
+    tgl_error = calcTGLDistance(current_pos->y, current_pos->z, tgl_plane);  // Changed x to y
     pitch_output = pidControllerUpdate(&pitch_controller, 0, tgl_error);
     h_ctl_pitch_setpoint = pitch_output;
 }
